@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GDG Community | Media Gallery</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+  body { background: #f8f9fa; color: #333; }
+
+  nav {
+    background: white; display: flex; justify-content: space-between;
+    align-items: center; padding: 15px 40px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  .logo { font-weight: bold; font-size: 20px; }
+  nav ul { list-style: none; display: flex; gap: 25px; }
+  nav ul li a { text-decoration: none; color: #333; font-weight: 500; }
+  nav ul li a.active { color: #1a73e8; }
+  .join-btn {
+    background: #0d9488; color: white; border: none; border-radius: 6px;
+    padding: 8px 14px; font-weight: 500; cursor: pointer;
+  }
+
+  .header {
+    background: linear-gradient(90deg, #E53935, #D81B60);
+    color: white; text-align: center; padding: 60px 20px; position: relative;
+  }
+  .header h1 { font-size: 46px; font-weight: 700; margin-bottom: 10px; }
+  .header p { font-size: 18px; opacity: 0.9; }
+  .add-btn {
+    position: absolute; top: 50%; right: 40px; transform: translateY(-50%);
+    background: white; color:#1a73e8; padding: 12px 20px; border: none;
+    border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 15px;
+  }
+
+  .gallery {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 25px; padding: 40px; max-width: 1300px; margin: auto;
+  }
+  .card {
+    background: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    overflow: hidden; transition: transform 0.2s ease;
+  }
+  .card:hover { transform: translateY(-5px); }
+  .card img { width: 100%; height: 220px; object-fit: cover; }
+  .card-content { padding: 15px; }
+  .card-content h3 { margin-bottom: 6px; color: #0d9488; }
+  .card-content p { font-size: 14px; color: #555; }
+
+  .actions {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 15px; border-top: 1px solid #eee;
+  }
+  .actions button {
+    background: none; border: none; cursor: pointer;
+    display: flex; align-items: center; gap: 6px; color: #0d9488; font-weight: 600;
+  }
+  .actions span { color: #555; font-size: 14px; }
+
+  .comments {
+    border-top: 1px solid #eee; padding: 10px 15px;
+    background: #fafafa;
+  }
+  .comment { margin-bottom: 6px; font-size: 13px; color: #333; }
+  .comment strong { color: #1a73e8; margin-right: 4px; }
+  .comment-input { display: flex; margin-top: 8px; gap: 6px; }
+  .comment-input input {
+    flex: 1; padding: 6px; border-radius: 6px; border: 1px solid #ccc;
+  }
+  .comment-input button {
+    background: #1a73e8; color: white; border: none; padding: 6px 10px;
+    border-radius: 6px; cursor: pointer;
+  }
+
+  .modal {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center;
+  }
+  .modal-content {
+    background: white; border-radius: 10px; padding: 25px;
+    width: 90%; max-width: 500px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  .modal h2 { color: #1a73e8; margin-bottom: 15px; text-align: center; }
+  .modal label { display: block; margin-top: 12px; font-weight: 500; }
+  .modal input, .modal textarea {
+    width: 100%; padding: 10px; border: 1px solid #ccc;
+    border-radius: 6px; margin-top: 5px;
+  }
+  .modal button {
+    background: #1a73e8; color: white; border: none;
+    padding: 10px 14px; border-radius: 6px; cursor: pointer;
+    font-weight: 600; margin-top: 20px; width: 100%;
+  }
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav>
+  <div class="logo">GDG Community</div>
+  <ul>
+    <li><a href="index.html">🏠 Home</a></li>
+    <li><a href="events.html">📅 Events</a></li>
+    <li><a href="gallery.html" class="active">🖼️ Gallery</a></li>
+    <li><a href="discussions.html">💬 Discussions</a></li>
+  </ul>
+  <button class="join-btn">Join Community</button>
+</nav>
+
+<!-- Header -->
+<section class="header">
+  <h1>Media Gallery</h1>
+  <p>Relive our community moments through photos and memories</p>
+  <button class="add-btn" id="addMediaBtn">+ Add Media</button>
+</section>
+
+<!-- Gallery -->
+<section class="gallery" id="galleryContainer">
+  <p>Loading media...</p>
+</section>
+
+<!-- Add Media Modal -->
+<div class="modal" id="addMediaModal">
+  <div class="modal-content">
+    <h2>Add New Media</h2>
+    <label>Title</label>
+    <input type="text" id="mediaTitle" placeholder="Enter title" />
+    <label>Date</label>
+    <input type="date" id="mediaDate" />
+    <label>Description</label>
+    <textarea id="mediaDescription" placeholder="Enter description"></textarea>
+    <label>Image URL</label>
+    <input type="text" id="mediaImageUrl" placeholder="Paste image URL" />
+    <button id="saveMediaBtn">Save</button>
+  </div>
+</div>
+
+<script type="module">
+  import { app, db } from "../firebase-config.js";
+  import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+  import {
+    collection, addDoc, onSnapshot, query, orderBy, serverTimestamp,
+    doc, getDocs, setDoc, deleteDoc
+  } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+  const auth = getAuth(app);
+  // attempt sign-in, but provide a helper to ensure we have auth when performing actions
+  signInAnonymously(auth).catch(()=>{});
+  let userId = null;
+  onAuthStateChanged(auth, (u) => { userId = u?.uid || null; });
+
+  async function ensureAuth() {
+    if (userId) return userId;
+    try {
+      const cred = await signInAnonymously(auth);
+      userId = cred.user?.uid || null;
+      return userId;
+    } catch (err) {
+      console.warn('ensureAuth failed', err);
+      return null;
+    }
+  }
+
+  const galleryContainer = document.getElementById("galleryContainer");
+  const modal = document.getElementById("addMediaModal");
+  const addMediaBtn = document.getElementById("addMediaBtn");
+  const saveMediaBtn = document.getElementById("saveMediaBtn");
+
+  addMediaBtn.addEventListener("click", () => modal.style.display = "flex");
+  window.addEventListener("click", (e) => { if (e.target === modal) modal.style.display = "none"; });
+
+  const mediaQuery = query(collection(db, "mediaGallery"), orderBy("createdAt", "desc"));
+  onSnapshot(mediaQuery, async (snapshot) => {
+    galleryContainer.innerHTML = "";
+    snapshot.docs.forEach((d) => renderMedia(d.id, d.data()));
+  });
+
+  async function renderMedia(id, data) {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <img src="${data.imageUrl || 'https://via.placeholder.com/400x300?text=No+Image'}" alt="${data.title}">
+      <div class="card-content">
+        <h3>${data.title}</h3>
+        <p>${data.description || ""}</p>
+        <p><small>${data.date || ""}</small></p>
+      </div>
+      <div class="actions">
+        <button id="like-${id}">❤️ Like</button>
+        <span id="likeCount-${id}">0</span>
+      </div>
+      <div class="comments" id="comments-${id}">
+        <div class="comment-list"></div>
+        <div class="comment-input">
+          <input type="text" placeholder="Add a comment..." id="commentInput-${id}">
+          <button id="commentBtn-${id}">Post</button>
+        </div>
+      </div>`;
+
+    galleryContainer.appendChild(card);
+
+    // Likes
+    const likesRef = collection(db, "mediaGallery", id, "likes");
+    onSnapshot(likesRef, (snap) => {
+      document.getElementById(`likeCount-${id}`).textContent = snap.size + " likes";
+    });
+    document.getElementById(`like-${id}`).addEventListener("click", async () => {
+      const uid = await ensureAuth();
+      if (!uid) return alert('Could not sign in. Enable Anonymous auth in Firebase or sign in.');
+      const likeDoc = doc(db, "mediaGallery", id, "likes", uid);
+      const existing = await getDocs(likesRef);
+      const hasLiked = existing.docs.find((d) => d.id === uid);
+      if (hasLiked) await deleteDoc(likeDoc);
+      else await setDoc(likeDoc, { userId: uid, createdAt: serverTimestamp() });
+    });
+
+    // Comments
+    const commentList = card.querySelector(".comment-list");
+    const commentsRef = collection(db, "mediaGallery", id, "comments");
+    onSnapshot(query(commentsRef, orderBy("createdAt", "asc")), (snap) => {
+      commentList.innerHTML = "";
+      snap.forEach((c) => {
+        const d = c.data();
+        commentList.innerHTML += `<div class="comment"><strong>User:</strong> ${d.text}</div>`;
+      });
+    });
+
+    document.getElementById(`commentBtn-${id}`).addEventListener("click", async () => {
+      const input = document.getElementById(`commentInput-${id}`);
+      const text = input.value.trim();
+      if (!text) return;
+      const uid = await ensureAuth();
+      if (!uid) return alert('Could not sign in. Enable Anonymous auth in Firebase or sign in.');
+      await addDoc(commentsRef, { text, userId: uid, createdAt: serverTimestamp() });
+      input.value = "";
+    });
+  }
+
+  // Add media
+  saveMediaBtn.addEventListener("click", async () => {
+    const title = document.getElementById("mediaTitle").value;
+    const date = document.getElementById("mediaDate").value;
+    const description = document.getElementById("mediaDescription").value;
+    const imageUrl = document.getElementById("mediaImageUrl").value;
+    if (!title || !imageUrl) return alert("Title and Image URL are required.");
+    await addDoc(collection(db, "mediaGallery"), {
+      title, date, description, imageUrl, createdAt: serverTimestamp(),
+    });
+    modal.style.display = "none";
+  });
+</script>
+
+</body>
+</html>

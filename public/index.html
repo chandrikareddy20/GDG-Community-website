@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GDG Community</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      background-color: #f5f6fa;
+      color: #333;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: white;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      padding: 15px 40px;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 10;
+    }
+
+    .logo {
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 25px;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+    }
+
+    nav a.active {
+      color: #1a73e8;
+    }
+
+    .join-btn {
+      background-color: #1a73e8;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .join-btn:hover {
+      background-color: #0b5ed7;
+    }
+
+    /* Profile display */
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 500;
+    }
+
+    .user-profile img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+    }
+
+    /* Hero section */
+    .hero {
+      position: relative;
+      background: url('images/image.jpg') center center / cover no-repeat fixed;
+      height: 90vh;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 0 5rem;
+      color: white;
+      overflow: hidden;
+      margin-top: 80px;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 600px;
+    }
+
+    .hero-content h1 span {
+      color: #fbbc05;
+    }
+
+    .btn {
+      background-color: #1a73e8;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 8px;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 15px;
+      transition: background 0.2s;
+    }
+
+    .btn:hover {
+      background-color: #0b5ed7;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid white;
+      margin-left: 10px;
+    }
+    /* EVENTS SLIDER SECTION */
+    .events {
+      padding: 60px 20px;
+      text-align: center;
+    }
+
+    .events-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      max-width: 1100px;
+      margin-inline: auto;
+    }
+    .slide-btn {
+      background: #1a73e8;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .slide-btn:hover {
+      background: #0b5ed7;
+    }
+
+    #eventGrid {
+      display: flex;
+      gap: 1rem;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      padding: 1rem 2rem;
+    }
+
+    #eventGrid::-webkit-scrollbar {
+      height: 8px;
+    }
+    #eventGrid::-webkit-scrollbar-thumb {
+      background: #ccc;
+      border-radius: 8px;
+    }
+
+    .event-card {
+      flex: 0 0 250px;
+      height: 250px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      overflow: hidden;
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .event-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .event-image {
+      height: 60%;
+      width: 100%;
+      background-size: cover;
+      background-position: center;
+      border-bottom: 1px solid #eee;
+    }
+
+    .event-info {
+      height: 40%;
+      padding: 8px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .event-info h3 {
+      color: #1a73e8;
+      font-size: 1rem;
+      margin: 0.2rem 0;
+    }
+
+    .event-info p {
+      font-size: 0.85rem;
+      color: #555;
+      margin: 2px 0;
+    }
+
+    /* WHY JOIN SECTION */
+    .features-section {
+      background: linear-gradient(to bottom, #f8fbff, #f5fdf9);
+      padding: 80px 20px;
+      text-align: center;
+    }
+
+    .features-section h2 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      color: #111;
+    }
+
+    .features-section p {
+      color: #555;
+      margin-bottom: 50px;
+      font-size: 1rem;
+    }
+
+    .features {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 30px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .feature-card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      padding: 30px 20px;
+      width: 300px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    .icon {
+      font-size: 40px;
+      margin-bottom: 15px;
+      display: inline-block;
+      padding: 20px;
+      border-radius: 50%;
+    }
+
+    .icon.blue { background: #e8f0fe; color: #1a73e8; }
+    .icon.yellow { background: #fff8e1; color: #fbbc05; }
+    .icon.green { background: #e6f4ea; color: #34a853; }
+
+    .feature-card h3 {
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+    }
+
+    .feature-card p {
+      color: #020202;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    /* CTA Section */
+    .cta {
+      text-align: center;
+      background-color: #1a73e8;
+      color: rgb(255, 255, 255);
+      padding: 60px 20px;
+      border-top-left-radius: 40px;
+      border-top-right-radius: 40px;
+    }
+    .cta p {
+  color: #000;
+}
+    .cta-btn {
+      display: inline-block;
+      margin-top: 20px;
+      background: #1a73e8;
+      color: #f9fafb;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <span style="color:#ea4335;">●</span>
+      <span style="color:#fbbc05;">●</span>
+      <span style="color:#34a853;">●</span>
+      <span style="color:#4285f4;">●</span>
+      <strong>GDG Community</strong>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="index.html" class="active">🏠 Home</a></li>
+        <li><a href="events.html">📅 Events</a></li>
+        <li><a href="gallery.html">🖼️ Gallery</a></li>
+        <li><a href="discussions.html">💬 Discussions</a></li>
+      </ul>
+    </nav>
+    <div id="authContainer">
+      <button id="joinBtn" class="join-btn">Join Community</button>
+    </div>
+  </header>
+
+  <!-- Hero -->
+   <section class="hero">
+    <div class="overlay"></div>
+    <div class="hero-content">
+      <p>✨ Welcome to GDG Community</p>
+      <h1>Connect, Learn, <br><span>Build Together</span></h1>
+      <p>Join our vibrant community of developers, designers, and innovators. Share ideas, collaborate on projects, and grow your skills.</p>
+      <div class="buttons">
+        <a href="#" id="getStartedBtn" class="btn">Get Started →</a>
+        <a href="events.html" class="btn btn-outline">View Events</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Events -->
+  <section class="events">
+    <div class="events-header">
+      <div>
+        <h2>Upcoming Events</h2>
+        <p>Join our exciting workshops, hackathons, and meetups</p>
+      </div>
+      <a href="events.html" class="view-all">View All →</a>
+    </div>
+    
+    <!-- Event Cards -->
+    <div id="eventGrid">
+      <p style="color:#666; text-align:center;">Loading events...</p>
+    </div>
+  </section>
+
+  <!-- WHY JOIN SECTION -->
+  <section class="features-section">
+    <h2>Why Join Our Community?</h2>
+    <p>Experience the power of collaborative learning and innovation</p>
+
+    <div class="features">
+      <div class="feature-card">
+        <div class="icon blue">📅</div>
+        <h3>Regular Events</h3>
+        <p>Workshops, hackathons, and meetups to enhance your skills and network</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="icon yellow">👥</div>
+        <h3>Vibrant Community</h3>
+        <p>Connect with passionate developers, designers, and tech enthusiasts</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="icon green">✨</div>
+        <h3>Skill Development</h3>
+        <p>Learn cutting-edge technologies and best practices from industry experts</p>
+      </div>
+    </div>
+  </section>
+
+ <!-- CTA -->
+<section class="cta">
+  <h2>Ready to Start Your Journey?</h2>
+  <p>Join thousands of developers in our community and take your skills to the next level</p>
+  <a href="#" class="cta-btn">Join GDG Community Today →</a>
+</section>
+
+<!-- Firebase Firestore + Auth Script -->
+<script type="module">
+  import { app, db } from "../firebase-config.js";
+  import { 
+    collection, query, orderBy, getDocs, doc, setDoc, serverTimestamp 
+  } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+  import { 
+    getAuth, GoogleAuthProvider, signInWithPopup 
+  } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+
+  const eventGrid = document.getElementById("eventGrid");
+  const joinBtn = document.querySelector(".join-btn");
+
+  // --- LOAD EVENTS FROM FIRESTORE ---
+  async function loadEvents() {
+    try {
+      const q = query(collection(db, "events"), orderBy("date"));
+      const snapshot = await getDocs(q);
+      eventGrid.innerHTML = "";
+
+      if (snapshot.empty) {
+        eventGrid.innerHTML = "<p style='color:#666;text-align:center;'>No upcoming events found.</p>";
+        return;
+      }
+
+      const defaultImages = [
+        "https://images.unsplash.com/photo-1522202176988-66273c2fd55f",
+        "https://images.unsplash.com/photo-1556761175-5973dc0f32e7",
+        "https://images.unsplash.com/photo-1519389950473-47ba0277781c",
+        "https://images.unsplash.com/photo-1581092334706-20eae6aa9b1e",
+        "https://images.unsplash.com/photo-1555949963-aa79dcee981c",
+        "https://images.unsplash.com/photo-1543269865-cbf427effbad",
+      ];
+
+      let index = 0;
+      snapshot.forEach((docSnap) => {
+        const e = docSnap.data();
+        const imgURL = e.image && e.image.trim() !== "" 
+          ? e.image 
+          : defaultImages[index++ % defaultImages.length];
+
+        const html = `
+          <div class="event-card">
+            <div class="event-image" style="background-image:url('${imgURL}')"></div>
+            <div class="event-info">
+              <h3>${e.title}</h3>
+              <p>📅 ${e.date}</p>
+              <p>🕒 ${e.time || ""}</p>
+              <p>📍 ${e.location || ""}</p>
+            </div>
+          </div>
+        `;
+        eventGrid.insertAdjacentHTML("beforeend", html);
+      });
+    } catch (err) {
+      console.error("Error loading events:", err);
+      eventGrid.innerHTML = "<p style='color:red;text-align:center;'>Failed to load events. Check console.</p>";
+    }
+  }
+
+  loadEvents();
+
+  // --- GOOGLE SIGN-IN (JOIN COMMUNITY) ---
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  joinBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      await setDoc(doc(db, "users", user.uid), {
+        name: user.displayName || "Anonymous",
+        email: user.email || "N/A",
+        joinedAt: serverTimestamp(),
+      });
+
+      joinBtn.textContent = `Joined ✓ ${user.displayName}`;
+      joinBtn.style.backgroundColor = "#16a34a";
+      alert(`🎉 Welcome to GDG Community, ${user.displayName}!`);
+    } catch (error) {
+      console.error("Error during sign-in:", error);
+      alert("❌ Sign-in failed. Try again.");
+    }
+  });
+
+  // --- "Get Started" Button Google Sign-In ---
+  const getStartedBtn = document.getElementById("getStartedBtn");
+  if (getStartedBtn) {
+    getStartedBtn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+
+        await setDoc(doc(db, "users", user.uid), {
+          name: user.displayName || "Anonymous",
+          email: user.email || "N/A",
+          joinedAt: serverTimestamp(),
+        });
+
+        getStartedBtn.textContent = `Welcome, ${user.displayName}!`;
+        getStartedBtn.style.backgroundColor = "#16a34a";
+        alert(`🎉 You’re now part of GDG Community, ${user.displayName}!`);
+      } catch (error) {
+        console.error("Error during Get Started sign-in:", error);
+        alert("❌ Sign-in failed. Try again.");
+      }
+    });
+  }
+</script>
+</body>
+</html>  

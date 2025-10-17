@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GDG Community | Events</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body { background: #f8f9fa; color: #333; }
+
+    /* Navbar */
+    nav {
+      background: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 40px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    .logo {
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 25px;
+    }
+
+    nav ul li a {
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    nav ul li a.active,
+    nav ul li a:hover {
+      color: #1a73e8;
+    }
+
+    .join-btn {
+      background:#1a73e8;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 14px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(90deg,#1a73e8);
+      color: white;
+      padding: 80px 20px;
+      text-align: center;
+      margin-top: 70px;
+      position: relative;
+    }
+
+    .hero h1 {
+      font-size: 44px;
+      font-weight: 700;
+    }
+
+    .hero p {
+      font-size: 18px;
+      opacity: 0.9;
+    }
+
+    .new-event-btn {
+      position: absolute;
+      right: 40px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: white;
+      color: #1a73e8;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Search bar */
+    .search-bar {
+      margin: 30px auto;
+      max-width: 700px;
+      display: flex;
+      align-items: center;
+      background-color: white;
+      border-radius: 8px;
+      padding: 10px 16px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .search-bar input {
+      border: none;
+      outline: none;
+      flex: 1;
+      font-size: 16px;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      background-color: white;
+      border: 1px solid #ddd;
+      margin: 0 4px;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .tab.active {
+      background-color: #1a73e8;
+      color: white;
+    }
+
+    /* Event sections */
+    .event-section { display: none; }
+    .event-section.active { display: block; }
+
+    .event-card {
+      max-width: 900px;
+      background: white;
+      margin: 0 auto 30px;
+      border-radius: 12px;
+      display: flex;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      transition: transform 0.2s ease;
+    }
+
+    .event-card:hover { transform: translateY(-3px); }
+
+    .event-card img {
+      width: 280px;
+      object-fit: cover;
+    }
+
+    .event-info {
+      padding: 20px;
+      flex: 1;
+    }
+
+    .event-info h2 {
+      margin-top: 0;
+      color: #1a73e8;
+    }
+
+    .event-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 14px;
+      color: #555;
+      margin-top: 10px;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      width: 400px;
+    }
+
+    .modal-content input, .modal-content textarea {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .modal-content button {
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 700px) {
+      .event-card { flex-direction: column; }
+      .event-card img { width: 100%; height: 200px; }
+      .new-event-btn { position: static; transform: none; margin-top: 15px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav>
+    <div class="logo">
+      <span style="color:#ea4335;">●</span>
+      <span style="color:#fbbc05;">●</span>
+      <span style="color:#34a853;">●</span>
+      <span style="color:#4285f4;">●</span>
+      <strong>GDG Community</strong>
+    </div>
+    <ul>
+      <li><a href="index.html">🏠 Home</a></li>
+      <li><a href="events.html" class="active">📅 Events</a></li>
+      <li><a href="gallery.html">🖼️ Gallery</a></li>
+      <li><a href="discussions.html">💬 Discussions</a></li>
+    </ul>
+    <button id="joinBtn" class="join-btn">Join Community</button>
+  </nav>
+
+  <!-- Header -->
+  <section class="hero">
+    <h1>Community Events</h1>
+    <p>Explore workshops, hackathons, and meetups that help you grow!</p>
+    <button class="new-event-btn" id="openModal">＋ New Event</button>
+  </section>
+
+  <!-- Search -->
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Search events by title or description...">
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active" data-target="upcoming">Upcoming</div>
+    <div class="tab" data-target="past">Past Events</div>
+  </div>
+
+  <!-- Event Sections -->
+  <div id="upcoming" class="event-section active"></div>
+  <div id="past" class="event-section"></div>
+
+  <!-- Add Event Modal -->
+  <div class="modal" id="eventModal">
+    <div class="modal-content">
+      <h3>Add New Event</h3>
+      <input type="text" id="title" placeholder="Event Title" required>
+      <input type="text" id="image" placeholder="Image URL">
+      <textarea id="description" placeholder="Event Description"></textarea>
+      <input type="date" id="date">
+      <input type="time" id="time">
+      <input type="text" id="location" placeholder="Location">
+      <button id="saveEvent">Save</button>
+    </div>
+  </div>
+
+  <!-- JS Logic -->
+  <script type="module">
+    import { app, db } from "../firebase-config.js";
+    import { 
+      getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+    import { 
+      collection, addDoc, setDoc, doc, onSnapshot, query, orderBy, serverTimestamp 
+    } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+    const joinBtn = document.getElementById("joinBtn");
+
+    // Google Sign-In
+    joinBtn.addEventListener("click", async () => {
+      if (auth.currentUser) {
+        await signOut(auth);
+        alert("Signed out successfully!");
+      } else {
+        try {
+          const result = await signInWithPopup(auth, provider);
+          const user = result.user;
+          await setDoc(doc(db, "users", user.uid), {
+            name: user.displayName,
+            email: user.email,
+            joinedAt: serverTimestamp(),
+          }, { merge: true });
+          alert(`Welcome ${user.displayName}! 🎉`);
+        } catch (e) {
+          console.error("Google Sign-In Error:", e);
+          alert("Sign-in failed. Please try again.");
+        }
+      }
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      joinBtn.textContent = user ? "Sign Out" : "Join Community";
+    });
+
+    // Render events
+    const upcomingEl = document.getElementById("upcoming");
+    const pastEl = document.getElementById("past");
+
+    function renderEvent(event) {
+      const eventDate = new Date(event.date);
+      const now = new Date();
+      const section = eventDate >= now ? upcomingEl : pastEl;
+
+      section.insertAdjacentHTML("beforeend", `
+        <div class="event-card">
+          <img src="${event.image || 'https://via.placeholder.com/280x180?text=Event'}">
+          <div class="event-info">
+            <h2>${event.title}</h2>
+            <p>${event.description || ''}</p>
+            <div class="event-meta">
+              <span>📅 ${event.date}</span>
+              <span>⏰ ${event.time || ''}</span>
+              <span>📍 ${event.location || ''}</span>
+            </div>
+          </div>
+        </div>
+      `);
+    }
+
+    const q = query(collection(db, "events"), orderBy("createdAt", "desc"));
+    onSnapshot(q, (snap) => {
+      upcomingEl.innerHTML = "";
+      pastEl.innerHTML = "";
+      snap.forEach(doc => renderEvent(doc.data()));
+    });
+
+    // Add new event
+    const modal = document.getElementById("eventModal");
+    document.getElementById("openModal").addEventListener("click", () => modal.style.display = "flex");
+    modal.addEventListener("click", e => { if (e.target === modal) modal.style.display = "none"; });
+
+    document.getElementById("saveEvent").addEventListener("click", async () => {
+      const title = document.getElementById("title").value;
+      const image = document.getElementById("image").value;
+      const description = document.getElementById("description").value;
+      const date = document.getElementById("date").value;
+      const time = document.getElementById("time").value;
+      const location = document.getElementById("location").value;
+
+      if (!title || !date) return alert("Please fill required fields!");
+
+      await addDoc(collection(db, "events"), {
+        title, image, description, date, time, location, createdAt: serverTimestamp()
+      });
+
+      alert("Event added successfully!");
+      modal.style.display = "none";
+    });
+
+    // Tabs
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        document.querySelectorAll(".event-section").forEach(sec => sec.classList.remove("active"));
+        tab.classList.add("active");
+        document.getElementById(tab.dataset.target).classList.add("active");
+      });
+    });
+
+    // Search filter
+    document.getElementById("searchInput").addEventListener("input", e => {
+      const term = e.target.value.toLowerCase();
+      document.querySelectorAll(".event-card").forEach(card => {
+        card.style.display = card.innerText.toLowerCase().includes(term) ? "flex" : "none";
+      });
+    });
+  </script>
+
+</body>
+</html>

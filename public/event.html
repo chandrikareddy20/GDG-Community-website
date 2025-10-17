@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Event details</title>
+  <style>
+    body{font-family:Segoe UI, sans-serif;margin:20px;background:#f5f6fa}
+    .card{max-width:900px;margin:0 auto;background:white;padding:20px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+    img{width:100%;height:auto;border-radius:8px}
+    .meta{display:flex;gap:12px;color:#555;margin-top:8px}
+  </style>
+</head>
+<body>
+  <div class="card" id="eventCard">
+    <h1 id="title">Loading...</h1>
+    <div class="meta"><span id="date"></span><span id="time"></span><span id="location"></span></div>
+    <img id="image" src="" alt="event image"/>
+    <p id="description"></p>
+  </div>
+
+  <script type="module">
+    import { app, db } from "../firebase-config.js";
+    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+    function getQueryParam(name){
+      const params = new URLSearchParams(location.search);
+      return params.get(name);
+    }
+
+    async function loadEvent(){
+      const id = getQueryParam('id');
+      if(!id){ document.getElementById('title').innerText = 'No event id provided'; return; }
+      try{
+        const dref = doc(db, 'events', id);
+        const snap = await getDoc(dref);
+        if(!snap.exists()){
+          document.getElementById('title').innerText = 'Event not found';
+          return;
+        }
+        const e = snap.data();
+        document.getElementById('title').innerText = e.title || '';
+        document.getElementById('date').innerText = '📅 ' + (e.date || '');
+        document.getElementById('time').innerText = '⏰ ' + (e.time || '');
+        document.getElementById('location').innerText = '📍 ' + (e.location || '');
+        document.getElementById('image').src = e.image || 'https://via.placeholder.com/900x300?text=Event';
+        document.getElementById('description').innerText = e.description || '';
+      }catch(err){
+        document.getElementById('title').innerText = 'Failed to load event';
+        console.error(err);
+      }
+    }
+
+    loadEvent();
+  </script>
+</body>
+</html>

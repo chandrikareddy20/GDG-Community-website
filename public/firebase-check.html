@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Firebase Check</title>
+  <style>body{font-family:Segoe UI, sans-serif;padding:20px} pre{background:#f4f4f4;padding:12px;border-radius:6px}</style>
+</head>
+<body>
+  <h1>Firebase Connection Check</h1>
+  <p id="status">Starting...</p>
+  <pre id="log"></pre>
+
+  <script type="module">
+    import { app, db } from './firebase-config.js';
+    import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js';
+    import { collection, addDoc, getDocs, serverTimestamp } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js';
+
+    const statusEl = document.getElementById('status');
+    const logEl = document.getElementById('log');
+    function log(...args){ console.log(...args); logEl.textContent += args.map(a=> (typeof a==='object'? JSON.stringify(a,null,2): String(a))).join(' ') + '\n'; }
+
+    (async function(){
+      try{
+        log('App:', app ? 'initialized' : 'no app');
+        const auth = getAuth(app);
+        statusEl.textContent = 'Signing in anonymously...';
+        try{
+          const cred = await signInAnonymously(auth);
+          log('Signed in anonymously as', cred.user.uid);
+        } catch(e){
+          log('Anonymous sign-in failed:', e?.message || e);
+        }
+
+        statusEl.textContent = 'Writing test doc...';
+        const payload = { test: 'hello', ts: serverTimestamp() };
+        const ref = await addDoc(collection(db, 'connectivity_test'), payload);
+        log('Wrote doc id', ref.id);
+
+        statusEl.textContent = 'Reading back test docs...';
+        const snap = await getDocs(collection(db, 'connectivity_test'));
+        log('Docs count', snap.size);
+        snap.forEach(d => log('doc', d.id, d.data()));
+
+        statusEl.textContent = 'Success: Firebase read/write works';
+      } catch(err) {
+        statusEl.textContent = 'Error: check console and rules/auth settings';
+        log('Error:', err?.code || err?.message || err);
+      }
+    })();
+  </script>
+</body>
+</html>
